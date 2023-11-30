@@ -23,7 +23,6 @@ public class MyEliza {
 
     public static final int PORT = 23;
     public static final int TIMEOUT = 15000;
-    public static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         Socket socket = null;
@@ -36,9 +35,8 @@ public class MyEliza {
             Writer writer = new OutputStreamWriter(out, "UTF-8");
             writer = new BufferedWriter(writer);
 
-            //
             InputStream in = socket.getInputStream();
-            BufferedReader terminal = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
             int c, prevC = -1;
             while ((c = in.read()) != -1) {
@@ -53,15 +51,20 @@ public class MyEliza {
             }
             writer.write("eliza" + "\r\n");
             writer.flush();
-            readFirst(terminal);
+            readFirst(reader);
+            
+            BufferedReader terminal = new BufferedReader(new InputStreamReader(System.in));
+            
 
-            String line = terminal.readLine();
-            while ((c = in.read()) != -1) {
+            String line ;
+            while ((line= terminal.readLine()) != null) {
                 writer.write(line + "\r\n");
                 writer.flush();
-                readEliza(terminal);
-                line = terminal.readLine();
+                readEliza(reader);
             }
+            reader.close();
+            writer.close();
+            out.close();
 
         } catch (IOException e) {
             System.err.print(e);
@@ -98,7 +101,7 @@ public class MyEliza {
                     System.out.print((char) c);
                 }
             }
-            System.out.print((char) c);
+            System.out.println((char) c);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,7 +124,7 @@ public class MyEliza {
                     System.out.print((char) c);
                 }
             }
-            System.out.print((char) c);
+            System.out.println((char) c);
         } catch (IOException e) {
             e.printStackTrace();
         }
